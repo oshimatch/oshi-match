@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>推しマッチ</title>
+<style>
+:root{--pk:#FF3D8B;--nv:#0D0D2B;--nv2:#1A1A3E;--nv3:#252550;--gd:#FFD166;--mn:#06D6A0;--wh:#F0F0FF;--gr:#8888AA;--rd:#FF6B6B;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,'Hiragino Sans',sans-serif;background:var(--nv);color:var(--wh);min-height:100vh;overflow-x:hidden;}
+
+/* PAGES */
+.pg{display:none;height:100vh;flex-direction:column;overflow:hidden;}
+.pg.on{display:flex;}
+.pg-body{flex:1;overflow-y:auto;padding:16px;}
+.pg-ftr{padding:0 16px 16px;display:flex;flex-direction:column;gap:9px;flex-shrink:0;}
+
+/* HEADER */
+.hdr{background:var(--nv2);padding:13px 17px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--pk);flex-shrink:0;}
+.logo{font-size:17px;font-weight:900;color:var(--pk);}
+.logo b{color:var(--gd);}
+.sm-badge{background:var(--nv3);border:1px solid var(--gd);color:var(--gd);font-size:11px;font-weight:700;padding:3px 9px;border-radius:18px;}
+
+/* BOTTOM NAV */
+.bnav{background:var(--nv2);border-top:1px solid var(--nv3);display:flex;padding:8px 0 22px;flex-shrink:0;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:2px 0;}
+.ni-ico{font-size:20px;}
+.ni-lbl{font-size:9px;color:var(--gr);font-weight:700;}
+.ni.on .ni-lbl{color:var(--pk);}
+.ni.on .ni-ico{filter:drop-shadow(0 0 4px var(--pk));}
+
+/* TABS */
+.tabs{display:flex;background:var(--nv2);border-bottom:1px solid var(--nv3);flex-shrink:0;}
+.tab{flex:1;padding:11px;text-align:center;font-size:13px;font-weight:700;color:var(--gr);cursor:pointer;border-bottom:3px solid transparent;}
+.tab.on{color:var(--pk);border-bottom-color:var(--pk);}
+
+/* TYPOGRAPHY */
+.ttl{font-size:18px;font-weight:900;margin-bottom:4px;}
+.sub{color:var(--gr);font-size:13px;margin-bottom:15px;}
+
+/* BUTTONS */
+.btn{border:none;padding:13px;border-radius:48px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;width:100%;}
+.btn-p{background:linear-gradient(135deg,var(--pk),#9B5DE5);color:#fff;box-shadow:0 4px 16px rgba(255,61,139,.3);}
+.btn-s{background:transparent;color:var(--pk);border:2px solid var(--pk);}
+.btn-g{background:linear-gradient(135deg,var(--mn),#0099CC);color:var(--nv);}
+.btn-r{background:rgba(255,107,107,.15);color:var(--rd);border:1px solid var(--rd);}
+.btn-sm{padding:7px 13px;border-radius:18px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;}
+
+/* HERO */
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center;gap:18px;background:radial-gradient(ellipse at 30% 20%,#2D0B55,var(--nv) 65%);}
+.hero-ico{width:80px;height:80px;background:linear-gradient(135deg,var(--pk),#9B5DE5);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 0 32px rgba(255,61,139,.4);animation:fl 3s ease-in-out infinite;}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.hero h1{font-size:24px;font-weight:900;line-height:1.3;}
+.hero h1 span{color:var(--pk);}
+.hero p{color:var(--gr);font-size:13px;line-height:1.7;max-width:260px;}
+.total-box{background:var(--nv2);border:1px solid var(--mn);border-radius:14px;padding:13px 26px;text-align:center;}
+.total-n{font-size:32px;font-weight:900;color:var(--mn);}
+.total-l{font-size:12px;color:var(--gr);margin-top:2px;}
+
+/* SEARCH */
+.search-inp{background:var(--nv2);border:1px solid var(--nv3);border-radius:11px;padding:10px 14px;color:var(--wh);font-family:inherit;font-size:14px;width:100%;margin-bottom:12px;outline:none;}
+.search-inp:focus{border-color:var(--pk);}
+
+/* TEAM ITEMS */
+.team-item{background:var(--nv2);border:2px solid var(--nv3);border-radius:13px;padding:12px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:8px;}
+.team-item.sel{border-color:var(--pk);background:rgba(255,61,139,.07);}
+.team-ico{font-size:20px;width:40px;height:40px;background:var(--nv3);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.team-name{font-weight:700;font-size:14px;}
+.team-sub{font-size:11px;color:var(--gr);margin-top:1px;}
+
+/* GOODS */
+.g-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.g-card{background:var(--nv2);border:2px solid var(--nv3);border-radius:14px;padding:13px 9px;text-align:center;cursor:pointer;}
+.g-card.sel{border-color:var(--pk);background:rgba(255,61,139,.08);}
+.g-card.new-c{border-style:dashed;}
+.g-card img{width:100%;height:64px;object-fit:cover;border-radius:7px;margin-bottom:6px;}
+.g-card .emo{font-size:26px;display:block;margin-bottom:6px;}
+.g-card .lbl{font-size:11px;font-weight:700;line-height:1.3;}
+.g-card .usage{font-size:10px;color:var(--gr);margin-top:2px;}
+
+/* UPLOAD */
+.up-area{background:var(--nv2);border:2px dashed var(--gr);border-radius:14px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px;}
+.up-area .ico{font-size:32px;margin-bottom:6px;}
+.up-area p{color:var(--gr);font-size:13px;}
+#up-prev{width:100%;max-height:180px;object-fit:cover;border-radius:11px;margin-bottom:12px;display:none;}
+
+/* INPUTS */
+.lbl{font-size:12px;font-weight:700;color:var(--gr);margin-bottom:5px;display:block;}
+.inp{background:var(--nv2);border:1px solid var(--nv3);border-radius:11px;padding:11px 14px;color:var(--wh);font-family:inherit;font-size:14px;width:100%;margin-bottom:12px;outline:none;}
+.inp:focus{border-color:var(--pk);}
+
+/* STEPS */
+.steps{display:flex;align-items:center;gap:5px;margin-bottom:16px;}
+.st{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:var(--nv3);color:var(--gr);flex-shrink:0;}
+.st.on{background:var(--pk);color:#fff;}
+.st.dn{background:var(--mn);color:var(--nv);}
+.sl{flex:1;height:2px;background:var(--nv3);}
+.sl.dn{background:var(--mn);}
+
+/* NUMBER GRID */
+.legend{display:flex;gap:12px;margin-bottom:10px;}
+.leg{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--gr);}
+.dot{width:9px;height:9px;border-radius:50%;}
+.n-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:16px;}
+.n-chip{background:var(--nv2);border:2px solid var(--nv3);border-radius:10px;padding:8px 3px;text-align:center;cursor:pointer;}
+.n-chip .nn{font-size:14px;font-weight:900;}
+.n-chip .np{font-size:9px;color:var(--gr);margin-top:1px;line-height:1.2;word-break:break-all;}
+.n-chip.have{border-color:var(--mn);background:rgba(6,214,160,.1);}
+.n-chip.have .nn{color:var(--mn);}
+.n-chip.want{border-color:var(--pk);background:rgba(255,61,139,.1);}
+.n-chip.want .nn{color:var(--pk);}
+.n-chip.trading{border-color:var(--gd);background:rgba(255,209,102,.1);opacity:0.6;cursor:not-allowed;}
+.n-chip.trading .nn{color:var(--gd);}
+
+/* SEARCH RESULTS */
+.result-item{background:var(--nv2);border:1px solid var(--nv3);border-radius:13px;padding:13px;margin-bottom:9px;}
+.result-item.trading-item{border-color:var(--gd);opacity:.7;}
+.ri-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.ri-user{display:flex;align-items:center;gap:8px;}
+.ava{width:34px;height:34px;background:linear-gradient(135deg,var(--pk),#9B5DE5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ri-name{font-weight:700;font-size:13px;}
+.ri-sub{font-size:11px;color:var(--gr);}
+.status-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:14px;}
+.sb-open{background:rgba(6,214,160,.2);color:var(--mn);border:1px solid var(--mn);}
+.sb-trading{background:rgba(255,209,102,.2);color:var(--gd);border:1px solid var(--gd);}
+.tag-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:9px;}
+.tag{font-size:11px;padding:3px 8px;border-radius:6px;font-weight:700;}
+.tag.h{background:rgba(6,214,160,.15);color:var(--mn);border:1px solid var(--mn);}
+.tag.w{background:rgba(255,61,139,.15);color:var(--pk);border:1px solid var(--pk);}
+.tag.t{background:rgba(255,209,102,.15);color:var(--gd);border:1px solid var(--gd);}
+
+/* MESSAGE LIST */
+.msg-thread{background:var(--nv2);border:1px solid var(--nv3);border-radius:13px;padding:13px;margin-bottom:9px;cursor:pointer;display:flex;align-items:center;gap:11px;}
+.msg-thread.trading{border-color:var(--gd);}
+.thread-info{flex:1;}
+.thread-name{font-weight:700;font-size:14px;}
+.thread-last{font-size:12px;color:var(--gr);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.unread-dot{width:9px;height:9px;background:var(--pk);border-radius:50%;flex-shrink:0;}
+
+/* CHAT */
+.chat-hdr{background:var(--nv2);padding:12px 16px;border-bottom:1px solid var(--nv3);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.back{background:none;border:none;color:var(--pk);font-size:20px;cursor:pointer;padding:0;line-height:1;}
+.chat-status{font-size:11px;color:var(--mn);}
+.c-msgs{flex:1;padding:14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;}
+.msg{max-width:76%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.5;}
+.msg.r{background:var(--nv2);border-bottom-left-radius:3px;align-self:flex-start;}
+.msg.s{background:linear-gradient(135deg,var(--pk),#9B5DE5);border-bottom-right-radius:3px;align-self:flex-end;}
+.msg.sys{background:rgba(255,209,102,.1);border:1px solid var(--gd);color:var(--gd);font-size:11px;align-self:center;max-width:92%;text-align:center;}
+.c-inp-area{padding:9px 12px;background:var(--nv2);border-top:1px solid var(--nv3);display:flex;gap:7px;align-items:center;flex-shrink:0;}
+.c-inp{flex:1;background:var(--nv3);border:1px solid transparent;border-radius:22px;padding:9px 13px;color:var(--wh);font-family:inherit;font-size:14px;outline:none;}
+.c-inp:focus{border-color:var(--pk);}
+.send-btn{width:38px;height:38px;background:var(--pk);border:none;border-radius:50%;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.done-btn{background:var(--mn);color:var(--nv);border:none;padding:7px 10px;border-radius:20px;font-weight:700;font-size:11px;font-family:inherit;cursor:pointer;flex-shrink:0;}
+.cancel-btn{background:rgba(255,107,107,.15);color:var(--rd);border:1px solid var(--rd);padding:7px 10px;border-radius:20px;font-weight:700;font-size:11px;font-family:inherit;cursor:pointer;flex-shrink:0;}
+
+/* STADIUM MAP */
+.stadium-area{background:var(--nv3);border-radius:12px;overflow:hidden;margin:11px 0;}
+.stadium-img{width:100%;height:160px;object-fit:cover;}
+.stadium-name{padding:8px 11px;font-size:12px;font-weight:700;color:var(--gd);}
+.no-stadium{height:100px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gr);}
+
+/* PROFILE */
+.p-card{background:var(--nv2);border-radius:16px;padding:20px;margin-bottom:12px;text-align:center;border:1px solid var(--nv3);}
+.p-ava{width:64px;height:64px;background:linear-gradient(135deg,var(--pk),#9B5DE5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 10px;}
+.p-id{font-size:11px;color:var(--gr);margin-top:3px;}
+.st-row{display:flex;gap:8px;margin-top:13px;}
+.st-box{flex:1;background:var(--nv3);border-radius:10px;padding:10px;text-align:center;}
+.st-n{font-size:20px;font-weight:900;color:var(--pk);}
+.st-l{font-size:10px;color:var(--gr);margin-top:2px;}
+
+/* NOTICE */
+.notice-box{background:rgba(255,209,102,.08);border:1px solid var(--gd);border-radius:12px;padding:13px;margin-bottom:14px;}
+.notice-title{color:var(--gd);font-weight:700;font-size:13px;margin-bottom:6px;}
+.notice-body{color:var(--gr);font-size:12px;line-height:1.7;}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.overlay.on{display:flex;}
+.sheet{background:var(--nv2);border-radius:20px 20px 0 0;padding:20px 20px 36px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;}
+.handle{width:36px;height:4px;background:var(--nv3);border-radius:2px;margin:0 auto 17px;}
+.sheet-ttl{font-size:16px;font-weight:900;margin-bottom:6px;}
+.sheet-sub{color:var(--gr);font-size:13px;margin-bottom:17px;}
+
+/* ADMIN */
+.a-sec{background:var(--nv2);border-radius:14px;padding:13px;margin-bottom:10px;border:1px solid var(--nv3);}
+.a-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.a-btns{display:flex;gap:5px;}
+.btn-ed{background:var(--nv3);color:var(--wh);font-size:11px;padding:5px 9px;border-radius:7px;cursor:pointer;border:none;font-family:inherit;}
+.btn-dl{background:rgba(255,61,139,.12);color:var(--pk);font-size:11px;padding:5px 9px;border-radius:7px;cursor:pointer;border:1px solid var(--pk);font-family:inherit;}
+.p-tag{display:inline-block;background:var(--nv3);border-radius:7px;padding:2px 6px;font-size:10px;margin:2px;}
+.word-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(255,107,107,.15);border:1px solid var(--rd);color:var(--rd);border-radius:8px;padding:3px 9px;font-size:12px;margin:3px;cursor:pointer;}
+
+.empty{text-align:center;padding:40px 18px;color:var(--gr);}
+.empty .ei{font-size:42px;margin-bottom:12px;}
+.divider{height:1px;background:var(--nv3);margin:13px 0;}
+</style>
+</head>
+<body>
+
+<!-- ========== HOME ========== -->
+<div id="pg-home" class="pg on">
+  <div class="hdr">
+    <div class="logo">推し<b>マッチ</b></div>
+    <div class="sm-badge" id="hdr-badge">🎉 0件成立</div>
+  </div>
+  <div class="hero">
+    <div class="hero-ico">🎴</div>
+    <h1>推しグッズを<br><span>現場でマッチング</span></h1>
+    <p>個人情報不要。イベント会場で同じ推しのグッズを持つ人と安全に交換できます。</p>
+    <div class="total-box">
+      <div class="total-n" id="total-n">0</div>
+      <div class="total-l">件の交換が成立しました 🎊</div>
+    </div>
+  </div>
+  <div id="home-notice" style="padding:0 16px 8px;display:none;">
+    <div class="notice-box">
+      <div class="notice-title">⚠️ ご利用の注意</div>
+      <div class="notice-body" id="notice-text"></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="ni on" onclick="go('pg-home')"><div class="ni-ico">🏠</div><div class="ni-lbl">ホーム</div></div>
+    <div class="ni" onclick="go('pg-register')"><div class="ni-ico">➕</div><div class="ni-lbl">登録</div></div>
+    <div class="ni" onclick="go('pg-search')"><div class="ni-ico">🔍</div><div class="ni-lbl">探す</div></div>
+    <div class="ni" onclick="go('pg-messages')"><div class="ni-ico">💬</div><div class="ni-lbl">メッセージ</div></div>
+  </div>
+</div>
+
+<!-- ========== REGISTER: TEAM SELECT ========== -->
+<div id="pg-register" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b></div></div>
+  <div class="tabs" id="reg-league-tabs">
+    <div class="tab on" onclick="switchLeague('J1',this,'reg')">J1</div>
+    <div class="tab" onclick="switchLeague('J2',this,'reg')">J2</div>
+    <div class="tab" onclick="switchLeague('J3',this,'reg')">J3</div>
+  </div>
+  <div class="pg-body">
+    <div class="ttl">チームを選ぶ</div>
+    <div class="sub">登録するグッズのチームを選んでください</div>
+    <input class="search-inp" id="reg-team-q" placeholder="🔍 チーム名で検索..." oninput="renderTeamList('reg')">
+    <div id="reg-team-list"></div>
+  </div>
+  <div class="pg-ftr">
+    <button class="btn btn-p" onclick="toRegGoods()">次へ → グッズを選ぶ</button>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="go('pg-home')"><div class="ni-ico">🏠</div><div class="ni-lbl">ホーム</div></div>
+    <div class="ni on"><div class="ni-ico">➕</div><div class="ni-lbl">登録</div></div>
+    <div class="ni" onclick="go('pg-search')"><div class="ni-ico">🔍</div><div class="ni-lbl">探す</div></div>
+    <div class="ni" onclick="go('pg-messages')"><div class="ni-ico">💬</div><div class="ni-lbl">メッセージ</div></div>
+  </div>
+</div>
+
+<!-- ========== REGISTER: GOODS SELECT ========== -->
+<div id="pg-reg-goods" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b></div></div>
+  <div class="pg-body">
+    <div class="steps"><div class="st dn">✓</div><div class="sl dn"></div><div class="st on">1</div><div class="sl"></div><div class="st">2</div><div class="sl"></div><div class="st">3</div></div>
+    <div class="ttl">グッズを選ぶ</div>
+    <div class="sub" id="reg-goods-sub">どのグッズを交換しますか？</div>
+    <div class="g-grid" id="reg-g-grid"></div>
+  </div>
+  <div class="pg-ftr">
+    <button class="btn btn-p" onclick="toRegNumbers()">次へ → 背番号を選ぶ</button>
+    <button class="btn btn-s" onclick="go('pg-register')">← チームを選び直す</button>
+  </div>
+</div>
+
+<!-- ========== REGISTER: NEW GOODS ========== -->
+<div id="pg-new-goods" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b></div></div>
+  <div class="pg-body">
+    <div class="steps"><div class="st dn">✓</div><div class="sl dn"></div><div class="st dn">✓</div><div class="sl dn"></div><div class="st on">新</div><div class="sl"></div><div class="st">3</div></div>
+    <div class="ttl">新しいグッズを登録</div>
+    <div class="sub">初めて登録されるグッズです。写真とグッズ名を入れてください。</div>
+    <span class="lbl">グッズの写真（必須）</span>
+    <div class="up-area" id="up-area" onclick="document.getElementById('file-inp').click()">
+      <div class="ico">📷</div>
+      <p>タップして写真を選ぶ<br><small style="color:var(--gr)">JPG・PNG対応</small></p>
+    </div>
+    <img id="up-prev" alt="プレビュー">
+    <input type="file" id="file-inp" accept="image/*" style="display:none" onchange="onFileChange(this)">
+    <span class="lbl">グッズの種類</span>
+    <select class="inp" id="ng-cat"><option>缶バッジ</option><option>アクリルスタンド</option><option>ガチャ</option><option>その他</option></select>
+    <span class="lbl">グッズ名</span>
+    <input class="inp" id="ng-name" placeholder="例：2024シーズン缶バッジ">
+  </div>
+  <div class="pg-ftr">
+    <button class="btn btn-p" id="ng-btn" onclick="saveNewGoods()">登録して背番号を選ぶ →</button>
+    <button class="btn btn-s" onclick="go('pg-reg-goods')">← 戻る</button>
+  </div>
+</div>
+
+<!-- ========== REGISTER: NUMBERS ========== -->
+<div id="pg-reg-nums" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b></div></div>
+  <div class="pg-body">
+    <div class="steps"><div class="st dn">✓</div><div class="sl dn"></div><div class="st dn">✓</div><div class="sl dn"></div><div class="st dn">✓</div><div class="sl dn"></div><div class="st on">3</div></div>
+    <div class="ttl">背番号を選ぶ</div>
+    <div class="sub" id="reg-num-sub">持っている・欲しい背番号を選んでください</div>
+    <div class="notice-box" style="margin-bottom:13px;">
+      <div class="notice-body">⚠️ 「欲しい」だけの登録はできません。必ず「持っている」番号を1つ以上選んでください。</div>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="dot" style="background:var(--mn)"></div>持っている</div>
+      <div class="leg"><div class="dot" style="background:var(--pk)"></div>欲しい</div>
+    </div>
+    <div class="n-grid" id="reg-n-grid"></div>
+    <p style="font-size:11px;color:var(--gr);text-align:center;margin-bottom:16px;">タップ → 持っている🟢 → 欲しい🔴 → なし</p>
+  </div>
+  <div class="pg-ftr">
+    <button class="btn btn-p" onclick="submitMyListing()">登録する</button>
+    <button class="btn btn-s" onclick="go('pg-reg-goods')">← グッズを選び直す</button>
+  </div>
+</div>
+
+<!-- ========== SEARCH ========== -->
+<div id="pg-search" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b></div></div>
+  <div class="tabs" id="search-league-tabs">
+    <div class="tab on" onclick="switchLeague('J1',this,'search')">J1</div>
+    <div class="tab" onclick="switchLeague('J2',this,'search')">J2</div>
+    <div class="tab" onclick="switchLeague('J3',this,'search')">J3</div>
+  </div>
+  <div class="pg-body">
+    <div class="ttl">探す</div>
+    <div class="sub">チーム・選手・グッズで検索</div>
+    <!-- Step 1: team -->
+    <div id="search-step1">
+      <input class="search-inp" id="search-team-q" placeholder="🔍 チーム名で検索..." oninput="renderTeamList('search')">
+      <div id="search-team-list"></div>
+    </div>
+    <!-- Step 2: player -->
+    <div id="search-step2" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:13px;">
+        <button onclick="searchBack(1)" style="background:none;border:none;color:var(--pk);font-size:18px;cursor:pointer;">←</button>
+        <div id="search-team-label" style="font-weight:700;font-size:15px;"></div>
+      </div>
+      <div class="sub">選手を選んでください</div>
+      <div id="search-player-list"></div>
+    </div>
+    <!-- Step 3: goods -->
+    <div id="search-step3" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:13px;">
+        <button onclick="searchBack(2)" style="background:none;border:none;color:var(--pk);font-size:18px;cursor:pointer;">←</button>
+        <div id="search-player-label" style="font-weight:700;font-size:15px;"></div>
+      </div>
+      <div class="sub">グッズを選んでください</div>
+      <div class="g-grid" id="search-g-grid"></div>
+    </div>
+    <!-- Step 4: results -->
+    <div id="search-step4" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:13px;">
+        <button onclick="searchBack(3)" style="background:none;border:none;color:var(--pk);font-size:18px;cursor:pointer;">←</button>
+        <div id="search-result-label" style="font-weight:700;font-size:15px;"></div>
+      </div>
+      <div id="search-results-list"></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="go('pg-home')"><div class="ni-ico">🏠</div><div class="ni-lbl">ホーム</div></div>
+    <div class="ni" onclick="go('pg-register')"><div class="ni-ico">➕</div><div class="ni-lbl">登録</div></div>
+    <div class="ni on"><div class="ni-ico">🔍</div><div class="ni-lbl">探す</div></div>
+    <div class="ni" onclick="go('pg-messages')"><div class="ni-ico">💬</div><div class="ni-lbl">メッセージ</div></div>
+  </div>
+</div>
+
+<!-- ========== TRADE REQUEST: NUMBERS ========== -->
+<div id="pg-trade-nums" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b></div></div>
+  <div class="pg-body">
+    <div class="ttl">交換希望する</div>
+    <div class="sub" id="trade-num-sub">あなたが持っているグッズの背番号を選んでください</div>
+    <div class="notice-box" style="margin-bottom:13px;">
+      <div class="notice-body">⚠️ 「欲しい」だけの登録はできません。必ず「持っている」番号を1つ以上選んでください。</div>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="dot" style="background:var(--mn)"></div>持っている</div>
+      <div class="leg"><div class="dot" style="background:var(--pk)"></div>欲しい</div>
+    </div>
+    <div class="n-grid" id="trade-n-grid"></div>
+    <p style="font-size:11px;color:var(--gr);text-align:center;margin-bottom:16px;">タップ → 持っている🟢 → 欲しい🔴 → なし</p>
+  </div>
+  <div class="pg-ftr">
+    <button class="btn btn-p" onclick="submitTradeRequest()">交換希望を送る</button>
+    <button class="btn btn-s" onclick="go('pg-search')">← 戻る</button>
+  </div>
+</div>
+
+<!-- ========== MESSAGES ========== -->
+<div id="pg-messages" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b></div></div>
+  <div class="pg-body">
+    <div class="ttl">メッセージ</div>
+    <div class="sub">取引中のやりとり</div>
+    <div id="msg-thread-list"></div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="go('pg-home')"><div class="ni-ico">🏠</div><div class="ni-lbl">ホーム</div></div>
+    <div class="ni" onclick="go('pg-register')"><div class="ni-ico">➕</div><div class="ni-lbl">登録</div></div>
+    <div class="ni" onclick="go('pg-search')"><div class="ni-ico">🔍</div><div class="ni-lbl">探す</div></div>
+    <div class="ni on"><div class="ni-ico">💬</div><div class="ni-lbl">メッセージ</div></div>
+  </div>
+</div>
+
+<!-- ========== CHAT ========== -->
+<div id="pg-chat" class="pg">
+  <div class="chat-hdr">
+    <button class="back" onclick="go('pg-messages')">←</button>
+    <div class="ava" id="c-ava">😊</div>
+    <div>
+      <div style="font-weight:700;font-size:14px;" id="c-name">相手</div>
+      <div class="chat-status" id="c-status">取引中</div>
+    </div>
+    <div style="margin-left:auto;font-size:11px;color:var(--gd);" id="c-goods-badge"></div>
+  </div>
+  <!-- Stadium map -->
+  <div class="stadium-area" id="stadium-area" style="margin:0 12px;display:none;">
+    <img id="stadium-img" class="stadium-img" alt="スタジアム">
+    <div class="stadium-name" id="stadium-name"></div>
+  </div>
+  <div class="c-msgs" id="c-msgs">
+    <div class="msg sys">🔒 匿名チャットです。個人情報は共有しないでください。</div>
+  </div>
+  <div class="c-inp-area">
+    <input class="c-inp" id="c-inp" placeholder="メッセージを入力...">
+    <button class="cancel-btn" id="cancel-trade-btn" onclick="showCancelModal()">キャンセル</button>
+    <button class="done-btn" id="done-trade-btn" onclick="showDoneModal()">完了</button>
+    <button class="send-btn" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- ========== PROFILE (admin access) ========== -->
+<div id="pg-profile" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b></div></div>
+  <div class="pg-body">
+    <div class="ttl">プロフィール</div>
+    <div class="p-card">
+      <div class="p-ava" id="p-ava">😊</div>
+      <div style="font-size:15px;font-weight:900;" id="p-name">推しファン</div>
+      <div class="p-id" id="p-uid">ID: ---</div>
+      <div class="st-row">
+        <div class="st-box"><div class="st-n" id="my-trades">0</div><div class="st-l">交換成立</div></div>
+        <div class="st-box"><div class="st-n" style="color:var(--gd)" id="my-badge">🌱</div><div class="st-l">バッジ</div></div>
+      </div>
+    </div>
+    <button class="btn btn-s" style="font-size:12px;padding:10px;margin-bottom:9px;" onclick="go('pg-admin-login')">⚙️ 管理者ページ</button>
+    <button class="btn btn-s" style="font-size:12px;padding:10px;" onclick="go('pg-home')">← ホームへ</button>
+  </div>
+</div>
+
+<!-- ========== ADMIN LOGIN ========== -->
+<div id="pg-admin-login" class="pg">
+  <div class="hdr"><div class="logo">推し<b>マッチ</b> <span style="font-size:11px;color:var(--gr)">管理者</span></div></div>
+  <div class="pg-body" style="display:flex;align-items:center;justify-content:center;">
+    <div style="width:100%;max-width:290px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:13px;">🔐</div>
+      <div class="ttl" style="text-align:center;margin-bottom:5px;">管理者ログイン</div>
+      <div class="sub" style="text-align:center;">パスワードを入力してください</div>
+      <input class="inp" type="password" id="admin-pw" placeholder="パスワード">
+      <button class="btn btn-p" onclick="checkPw()" style="margin-bottom:9px;">ログイン</button>
+      <button class="btn btn-s" onclick="go('pg-home')">← 戻る</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ADMIN PANEL ========== -->
+<div id="pg-admin" class="pg">
+  <div class="hdr">
+    <div class="logo">推し<b>マッチ</b> <span style="font-size:11px;color:var(--gr)">管理</span></div>
+    <button onclick="go('pg-home')" style="background:none;border:none;color:var(--gr);font-size:12px;cursor:pointer;">← 戻る</button>
+  </div>
+  <div class="tabs" id="admin-main-tabs">
+    <div class="tab on" onclick="switchAdminTab('teams',this)">チーム</div>
+    <div class="tab" onclick="switchAdminTab('notice',this)">注意事項</div>
+    <div class="tab" onclick="switchAdminTab('words',this)">禁止ワード</div>
+    <div class="tab" onclick="switchAdminTab('goods-a',this)">グッズ</div>
+  </div>
+  <div class="pg-body">
+    <!-- TEAMS -->
+    <div id="admin-teams-tab">
+      <div class="tabs" id="admin-league-tabs" style="border-radius:10px;overflow:hidden;margin-bottom:12px;">
+        <div class="tab on" onclick="switchAdminLeague('J1',this)" style="font-size:12px;padding:8px;">J1</div>
+        <div class="tab" onclick="switchAdminLeague('J2',this)" style="font-size:12px;padding:8px;">J2</div>
+        <div class="tab" onclick="switchAdminLeague('J3',this)" style="font-size:12px;padding:8px;">J3</div>
+      </div>
+      <button onclick="openAddTeam()" style="background:var(--mn);color:var(--nv);border:none;padding:9px;border-radius:10px;font-weight:700;font-size:13px;width:100%;cursor:pointer;font-family:inherit;margin-bottom:12px;">＋ チームを追加</button>
+      <div id="admin-team-list"></div>
+    </div>
+    <!-- NOTICE -->
+    <div id="admin-notice-tab" style="display:none;">
+      <div class="ttl" style="margin-bottom:13px;">注意事項の編集</div>
+      <span class="lbl">利用者に表示する注意事項（空白で非表示）</span>
+      <textarea class="inp" id="notice-edit" rows="8" style="resize:vertical;" placeholder="例：交換は必ずスタジアム内の公共スペースで行ってください。"></textarea>
+      <button class="btn btn-p" onclick="saveNotice()">保存する</button>
+    </div>
+    <!-- BANNED WORDS -->
+    <div id="admin-words-tab" style="display:none;">
+      <div class="ttl" style="margin-bottom:6px;">禁止ワード設定</div>
+      <div class="sub">チャットでこのワードが含まれると送信できません</div>
+      <div id="word-tags" style="margin-bottom:13px;"></div>
+      <div style="display:flex;gap:8px;">
+        <input class="inp" id="new-word-inp" placeholder="禁止ワードを追加" style="margin-bottom:0;flex:1;">
+        <button onclick="addWord()" style="background:var(--pk);color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">追加</button>
+      </div>
+    </div>
+    <!-- GOODS ADMIN -->
+    <div id="admin-goods-a-tab" style="display:none;">
+      <div class="ttl" style="margin-bottom:13px;">登録済みグッズ</div>
+      <div id="admin-goods-list"></div>
+      <p style="color:var(--gr);font-size:12px;text-align:center;margin-top:8px;">グッズはユーザーが現場で初回登録します</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: COMPLETE ========== -->
+<div class="overlay" id="ov-done">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div style="font-size:44px;text-align:center;margin-bottom:10px;">🎉</div>
+    <div class="sheet-ttl">交換完了！</div>
+    <div class="sheet-sub">取引を完了しましたか？双方が完了ボタンを押すと成立になります。</div>
+    <button class="btn btn-p" onclick="confirmDone()" style="margin-bottom:9px;">完了する</button>
+    <button class="btn btn-s" onclick="closeOv('ov-done')">キャンセル</button>
+  </div>
+</div>
+
+<!-- ========== MODAL: CANCEL ========== -->
+<div class="overlay" id="ov-cancel">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div style="font-size:44px;text-align:center;margin-bottom:10px;">❌</div>
+    <div class="sheet-ttl">交換をキャンセル</div>
+    <div class="sheet-sub">キャンセルすると登録グッズが交換可能な状態に戻ります。</div>
+    <button class="btn btn-r" onclick="confirmCancel()" style="margin-bottom:9px;">キャンセルする</button>
+    <button class="btn btn-s" onclick="closeOv('ov-cancel')">戻る</button>
+  </div>
+</div>
+
+<!-- ========== MODAL: ADD/EDIT TEAM ========== -->
+<div class="overlay" id="ov-team">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-ttl" id="ov-team-title">チームを追加</div>
+    <div class="sheet-sub">チーム情報を入力してください</div>
+    <span class="lbl">チーム名</span>
+    <input class="inp" id="t-name" placeholder="例：栃木SC">
+    <span class="lbl">絵文字</span>
+    <input class="inp" id="t-emoji" placeholder="例：🟡">
+    <span class="lbl">スタジアム名</span>
+    <input class="inp" id="t-stadium" placeholder="例：カンセキスタジアムとちぎ">
+    <span class="lbl">スタジアム画像URL（任意）</span>
+    <input class="inp" id="t-stadium-img" placeholder="https://...">
+    <span class="lbl">選手一覧（「背番号 名前」を改行区切り）</span>
+    <textarea class="inp" id="t-players" rows="9" style="resize:vertical;" placeholder="1 川田修平&#10;4 佐藤祥&#10;5 柳育崇"></textarea>
+    <input type="hidden" id="t-id">
+    <button class="btn btn-p" onclick="saveTeam()" style="margin-bottom:9px;">保存する</button>
+    <button class="btn btn-s" onclick="closeOv('ov-team')">キャンセル</button>
+  </div>
+</div>
+
+<!-- Firebase Compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+// ============================================================
+// FIREBASE INIT
+// ============================================================
+firebase.initializeApp({
+  apiKey: "AIzaSyBiLft_UAh3FxTQ2BlMDxc9ztues6LiBoo",
+  authDomain: "oshi-match-2c8e6.firebaseapp.com",
+  projectId: "oshi-match-2c8e6",
+  storageBucket: "oshi-match-2c8e6.firebasestorage.app",
+  messagingSenderId: "518098690390",
+  appId: "1:518098690390:web:f33481ca687d80fa2d76f7"
+});
+var db = firebase.firestore();
+
+// ============================================================
+// LOCAL CACHE HELPERS (Firebaseが使えない間のフォールバック)
+// ============================================================
+function sg(k,d){try{var v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch(e){return d;}}
+function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function nid(){return db.collection('_').doc().id;}
+
+// ============================================================
+// FIREBASE DB HELPERS
+// ============================================================
+
+// listings
+async function dbGetListings(){
+  try{
+    var snap=await db.collection('listings').where('status','in',['open','trading']).get();
+    var arr=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    ss('oshi_listings',arr);
+    return arr;
+  }catch(e){return sg('oshi_listings',[]);}
+}
+async function dbSaveListing(data){
+  try{
+    if(data.id&&data.id.length>5){
+      await db.collection('listings').doc(data.id).set(data);
+    } else {
+      var ref=await db.collection('listings').add(data);
+      data.id=ref.id;
+    }
+    // update cache
+    var arr=sg('oshi_listings',[]);
+    var idx=arr.findIndex(function(x){return x.id===data.id;});
+    if(idx>=0) arr[idx]=data; else arr.push(data);
+    ss('oshi_listings',arr);
+    return data;
+  }catch(e){
+    var arr2=sg('oshi_listings',[]);
+    arr2.push(data); ss('oshi_listings',arr2);
+    return data;
+  }
+}
+async function dbUpdateListing(id,update){
+  try{await db.collection('listings').doc(id).update(update);}catch(e){}
+  var arr=sg('oshi_listings',[]);
+  var idx=arr.findIndex(function(x){return x.id===id;});
+  if(idx>=0){Object.assign(arr[idx],update);ss('oshi_listings',arr);}
+}
+async function dbDeleteListing(id){
+  try{await db.collection('listings').doc(id).delete();}catch(e){}
+  var arr=sg('oshi_listings',[]).filter(function(x){return x.id!==id;});
+  ss('oshi_listings',arr);
+}
+
+// threads
+async function dbGetThreads(){
+  try{
+    var snap=await db.collection('threads').where('users','array-contains',window.myUid).get();
+    var arr=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    ss('oshi_threads',arr);
+    return arr;
+  }catch(e){return sg('oshi_threads',[]);}
+}
+async function dbSaveThread(data){
+  try{
+    if(data.id&&data.id.length>5){
+      await db.collection('threads').doc(data.id).set(data);
+    } else {
+      var ref=await db.collection('threads').add(data);
+      data.id=ref.id;
+    }
+    var arr=sg('oshi_threads',[]);
+    var idx=arr.findIndex(function(x){return x.id===data.id;});
+    if(idx>=0) arr[idx]=data; else arr.push(data);
+    ss('oshi_threads',arr);
+    return data;
+  }catch(e){
+    var arr2=sg('oshi_threads',[]);
+    arr2.push(data); ss('oshi_threads',arr2);
+    return data;
+  }
+}
+async function dbUpdateThread(id,update){
+  try{await db.collection('threads').doc(id).update(update);}catch(e){}
+  var arr=sg('oshi_threads',[]);
+  var idx=arr.findIndex(function(x){return x.id===id;});
+  if(idx>=0){Object.assign(arr[idx],update);ss('oshi_threads',arr);}
+}
+
+// goods
+async function dbGetGoods(){
+  try{
+    var snap=await db.collection('goods').get();
+    var arr=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    if(arr.length) ss('oshi_goods',arr);
+    return arr.length?arr:sg('oshi_goods',[]);
+  }catch(e){return sg('oshi_goods',[]);}
+}
+async function dbSaveGoods(data){
+  try{
+    if(data.id&&data.id.length>5){
+      await db.collection('goods').doc(data.id).set(data);
+    } else {
+      var ref=await db.collection('goods').add(data);
+      data.id=ref.id;
+    }
+    var arr=sg('oshi_goods',[]);
+    var idx=arr.findIndex(function(x){return x.id===data.id;});
+    if(idx>=0) arr[idx]=data; else arr.push(data);
+    ss('oshi_goods',arr);
+    return data;
+  }catch(e){
+    var arr2=sg('oshi_goods',[]);
+    arr2.push(data); ss('oshi_goods',arr2);
+    return data;
+  }
+}
+async function dbDeleteGoods(id){
+  try{await db.collection('goods').doc(id).delete();}catch(e){}
+  var arr=sg('oshi_goods',[]).filter(function(x){return x.id!==id;});
+  ss('oshi_goods',arr);
+}
+
+// settings (notice / banned words)
+async function dbGetSettings(){
+  try{
+    var snap=await db.collection('settings').doc('global').get();
+    if(snap.exists){
+      var d=snap.data();
+      ss('oshi_notice',d.notice||'');
+      ss('oshi_banned_words',d.bannedWords||[]);
+      return d;
+    }
+  }catch(e){}
+  return {notice:sg('oshi_notice',''),bannedWords:sg('oshi_banned_words',[])};
+}
+async function dbSaveSettings(notice,bannedWords){
+  try{await db.collection('settings').doc('global').set({notice:notice,bannedWords:bannedWords});}catch(e){}
+  ss('oshi_notice',notice);
+  ss('oshi_banned_words',bannedWords);
+}
+
+// stats
+async function dbIncrementTrades(){
+  try{
+    await db.collection('settings').doc('global').update({
+      totalTrades: firebase.firestore.FieldValue.increment(1)
+    });
+  }catch(e){}
+  ss('oshi_total',sg('oshi_total',0)+1);
+}
+async function dbGetTotal(){
+  try{
+    var snap=await db.collection('settings').doc('global').get();
+    if(snap.exists) return snap.data().totalTrades||0;
+  }catch(e){}
+  return sg('oshi_total',0);
+}
+
+// ============================================================
+// DEFAULT TEAM DATA (2026シーズン)
+// ============================================================
+function defaultTeams(){
+  return {
+    J1:[
+      {id:'j1t01',name:'水戸ホーリーホック',emoji:'💙',stadium:'Ksスタジアム水戸',stadiumImg:'',players:[{no:1,name:'松井謙弥'},{no:7,name:'後藤田亘'},{no:9,name:'木村勝太'},{no:10,name:'鈴木喜丈'},{no:11,name:'黒川淳史'}]},
+      {id:'j1t02',name:'鹿島アントラーズ',emoji:'🦌',stadium:'カシマスタジアム',stadiumImg:'',players:[{no:1,name:'早川友基'},{no:4,name:'佐野海舟'},{no:5,name:'植田直通'},{no:7,name:'師岡柊生'},{no:9,name:'知念慶'},{no:10,name:'荒木遼太郎'},{no:13,name:'濃野公人'},{no:40,name:'鈴木優磨'}]},
+      {id:'j1t03',name:'浦和レッズ',emoji:'❤️',stadium:'埼玉スタジアム2002',stadiumImg:'',players:[{no:1,name:'西川周作'},{no:2,name:'酒井宏樹'},{no:8,name:'伊藤敦樹'},{no:9,name:'チアゴ・サンタナ'},{no:14,name:'前田直輝'},{no:17,name:'松尾佑介'}]},
+      {id:'j1t04',name:'柏レイソル',emoji:'🌟',stadium:'三協フロンテア柏スタジアム',stadiumImg:'',players:[{no:1,name:'佐々木雅志'},{no:7,name:'細谷真大'},{no:9,name:'小屋松知哉'},{no:10,name:'マテウス・サヴィオ'},{no:11,name:'武藤雄樹'}]},
+      {id:'j1t05',name:'ジェフユナイテッド千葉',emoji:'🟡',stadium:'フクダ電子アリーナ',stadiumImg:'',players:[{no:1,name:'鈴木椋大'},{no:8,name:'田口泰士'},{no:9,name:'小森飛絢'},{no:10,name:'見木友哉'},{no:11,name:'椿直起'}]},
+      {id:'j1t06',name:'FC東京',emoji:'🔵',stadium:'味の素スタジアム',stadiumImg:'',players:[{no:1,name:'波多野豪'},{no:8,name:'松木玖生'},{no:9,name:'仲川輝人'},{no:11,name:'荒木遼太郎'},{no:15,name:'俵積田晃太'}]},
+      {id:'j1t07',name:'東京ヴェルディ',emoji:'💚',stadium:'味の素スタジアム',stadiumImg:'',players:[{no:1,name:'マテウス'},{no:7,name:'山見大登'},{no:9,name:'木村勝大'},{no:10,name:'見木友哉'},{no:11,name:'翁長聖'}]},
+      {id:'j1t08',name:'FC町田ゼルビア',emoji:'⚫',stadium:'町田GIONスタジアム',stadiumImg:'',players:[{no:1,name:'谷晃生'},{no:7,name:'平河悠'},{no:9,name:'ドレシェビッチ'},{no:10,name:'オセフン'},{no:11,name:'ナサンホ'}]},
+      {id:'j1t09',name:'川崎フロンターレ',emoji:'💙',stadium:'Uvanceとどろきスタジアム by Fujitsu',stadiumImg:'',players:[{no:1,name:'チョン・ソンリョン'},{no:5,name:'橘田健人'},{no:8,name:'脇坂泰斗'},{no:10,name:'家長昭博'},{no:25,name:'小林悠'}]},
+      {id:'j1t10',name:'横浜F・マリノス',emoji:'⚓',stadium:'日産スタジアム',stadiumImg:'',players:[{no:4,name:'喜田拓也'},{no:7,name:'ヤン・マテウス'},{no:9,name:'アンデルソン・ロペス'},{no:10,name:'渡辺皓太'},{no:11,name:'植中朝日'}]},
+      {id:'j1t11',name:'清水エスパルス',emoji:'🧡',stadium:'IAIスタジアム日本平',stadiumImg:'',players:[{no:1,name:'権田修一'},{no:7,name:'カルリーニョス・ジュニオ'},{no:9,name:'北川航也'},{no:10,name:'乾貴士'},{no:11,name:'ルーカス・ブラガ'}]},
+      {id:'j1t12',name:'名古屋グランパス',emoji:'🔴',stadium:'豊田スタジアム',stadiumImg:'',players:[{no:1,name:'ランゲラック'},{no:4,name:'稲垣祥'},{no:7,name:'森島司'},{no:9,name:'パトリック'},{no:19,name:'永井謙佑'}]},
+      {id:'j1t13',name:'京都サンガF.C.',emoji:'💜',stadium:'サンガスタジアム by KYOCERA',stadiumImg:'',players:[{no:1,name:'太田岳志'},{no:7,name:'豊川雄太'},{no:9,name:'マルコ・トゥーリオ'},{no:10,name:'川﨑颯太'},{no:11,name:'宮吉拓実'}]},
+      {id:'j1t14',name:'ガンバ大阪',emoji:'💛',stadium:'パナソニックスタジアム吹田',stadiumImg:'',players:[{no:1,name:'一森純'},{no:7,name:'宇佐美貴史'},{no:8,name:'ダワン'},{no:9,name:'坂本一彩'},{no:11,name:'山下諒也'}]},
+      {id:'j1t15',name:'セレッソ大阪',emoji:'🌸',stadium:'ヨドコウ桜スタジアム',stadiumImg:'',players:[{no:9,name:'レオ・セアラ'},{no:7,name:'北野颯太'},{no:10,name:'香川真司'},{no:11,name:'カピシャーバ'}]},
+      {id:'j1t16',name:'ヴィッセル神戸',emoji:'🔴',stadium:'ノエビアスタジアム神戸',stadiumImg:'',players:[{no:1,name:'前川黛也'},{no:7,name:'武藤嘉紀'},{no:8,name:'山口蛍'},{no:10,name:'大迫勇也'},{no:11,name:'齊藤未月'}]},
+      {id:'j1t17',name:'ファジアーノ岡山',emoji:'🦅',stadium:'シティライトスタジアム',stadiumImg:'',players:[{no:1,name:'堀田大暉'},{no:7,name:'田中雄大'},{no:9,name:'グレイソン'},{no:10,name:'チアゴ・アウベス'},{no:11,name:'ルカオ'}]},
+      {id:'j1t18',name:'サンフレッチェ広島',emoji:'🟣',stadium:'エディオンピースウイング広島',stadiumImg:'',players:[{no:1,name:'大迫敬介'},{no:7,name:'東俊希'},{no:9,name:'ピエロス'},{no:10,name:'加藤陸次樹'},{no:11,name:'満田誠'}]},
+      {id:'j1t19',name:'V・ファーレン長崎',emoji:'💙',stadium:'トランスコスモススタジアム長崎',stadiumImg:'',players:[{no:1,name:'富澤雅也'},{no:7,name:'マルコス・ギリェルメ'},{no:9,name:'エジガル・ジュニオ'},{no:10,name:'加藤聖'},{no:11,name:'名倉巧'}]},
+      {id:'j1t20',name:'アビスパ福岡',emoji:'🐝',stadium:'ベスト電器スタジアム',stadiumImg:'',players:[{no:1,name:'村上昌謙'},{no:7,name:'紺野和也'},{no:9,name:'山岸祐也'},{no:10,name:'前嶋洋太'},{no:11,name:'ウェリントン'}]}
+    ],
+    J2:[
+      {id:'j2t01',name:'北海道コンサドーレ札幌',emoji:'🔴',stadium:'札幌ドーム',stadiumImg:'',players:[{no:1,name:'菅野孝憲'},{no:7,name:'ルーカス・フェルナンデス'},{no:9,name:'小柏剛'},{no:10,name:'荒野拓馬'},{no:11,name:'金子拓郎'}]},
+      {id:'j2t02',name:'ヴァンラーレ八戸',emoji:'⚓',stadium:'プライフーズスタジアム',stadiumImg:'',players:[{no:1,name:'松原颯汰'},{no:9,name:'浦上仁騎'},{no:10,name:'和田育'},{no:11,name:'佐々木快'}]},
+      {id:'j2t03',name:'モンテディオ山形',emoji:'🟣',stadium:'NDソフトスタジアム山形',stadiumImg:'',players:[{no:1,name:'後藤雅明'},{no:7,name:'南秀仁'},{no:9,name:'チアゴ・アウベス'},{no:10,name:'坂本涼馬'}]},
+      {id:'j2t04',name:'ブラウブリッツ秋田',emoji:'🔵',stadium:'ソユースタジアム',stadiumImg:'',players:[{no:1,name:'山田元気'},{no:9,name:'中村充孝'},{no:10,name:'稲葉修土'}]},
+      {id:'j2t05',name:'ベガルタ仙台',emoji:'💛',stadium:'ユアテックスタジアム仙台',stadiumImg:'',players:[{no:1,name:'ストイシッチ'},{no:7,name:'相良竜之介'},{no:9,name:'中島元彦'},{no:10,name:'内田裕斗'}]},
+      {id:'j2t06',name:'いわきFC',emoji:'🟡',stadium:'いわきグリーンフィールド',stadiumImg:'',players:[{no:1,name:'立川小太郎'},{no:9,name:'有田稜'},{no:10,name:'嵯峨理久'}]},
+      {id:'j2t07',name:'栃木シティ',emoji:'🟢',stadium:'栃木市総合運動公園陸上競技場',stadiumImg:'',players:[{no:1,name:'守田達弥'},{no:9,name:'岡田優希'},{no:10,name:'田中和樹'}]},
+      {id:'j2t08',name:'RB大宮アルディージャ',emoji:'🟠',stadium:'NACK5スタジアム大宮',stadiumImg:'',players:[{no:1,name:'笠原昂史'},{no:9,name:'矢島慎也'},{no:10,name:'中野誠也'},{no:11,name:'富山貴光'}]},
+      {id:'j2t09',name:'横浜FC',emoji:'🔵',stadium:'ニッパツ三ツ沢球技場',stadiumImg:'',players:[{no:1,name:'市川暉記'},{no:7,name:'一美和成'},{no:9,name:'小川慶治朗'},{no:10,name:'山下諒也'}]},
+      {id:'j2t10',name:'湘南ベルマーレ',emoji:'💙',stadium:'レモンガススタジアム平塚',stadiumImg:'',players:[{no:1,name:'富居大樹'},{no:7,name:'大橋祐紀'},{no:9,name:'岡本拓也'},{no:10,name:'池田昌生'}]},
+      {id:'j2t11',name:'藤枝MYFC',emoji:'🟢',stadium:'藤枝総合運動公園サッカー場',stadiumImg:'',players:[{no:9,name:'矢村健'},{no:10,name:'大石竜平'}]},
+      {id:'j2t12',name:'ヴァンフォーレ甲府',emoji:'💜',stadium:'JITリサイクルインクスタジアム',stadiumImg:'',players:[{no:1,name:'河田晃兵'},{no:9,name:'ウタカ'},{no:10,name:'マルセロ'}]},
+      {id:'j2t13',name:'ジュビロ磐田',emoji:'🟤',stadium:'ヤマハスタジアム',stadiumImg:'',players:[{no:1,name:'三浦龍輝'},{no:7,name:'鈴木海音'},{no:9,name:'古川陽介'},{no:10,name:'上原力也'},{no:11,name:'ジャーメイン良'}]},
+      {id:'j2t14',name:'カターレ富山',emoji:'🔵',stadium:'富山県総合運動公園陸上競技場',stadiumImg:'',players:[{no:9,name:'末木裕也'},{no:10,name:'碓井鉄平'}]},
+      {id:'j2t15',name:'アルビレックス新潟',emoji:'🟠',stadium:'デンカビッグスワンスタジアム',stadiumImg:'',players:[{no:1,name:'小島亨介'},{no:7,name:'三戸舜介'},{no:9,name:'鈴木孝司'},{no:10,name:'秋山裕紀'}]},
+      {id:'j2t16',name:'徳島ヴォルティス',emoji:'💛',stadium:'鳴門・大塚スポーツパークポカリスエットスタジアム',stadiumImg:'',players:[{no:9,name:'杉森考起'},{no:10,name:'西谷和希'}]},
+      {id:'j2t17',name:'FC今治',emoji:'🟠',stadium:'里山スタジアム',stadiumImg:'',players:[{no:9,name:'有田光希'},{no:10,name:'小澤司'}]},
+      {id:'j2t18',name:'サガン鳥栖',emoji:'💙',stadium:'駅前不動産スタジアム',stadiumImg:'',players:[{no:1,name:'パク・イルギュ'},{no:7,name:'手塚康平'},{no:9,name:'垣田裕暉'},{no:10,name:'福田晃斗'}]},
+      {id:'j2t19',name:'テゲバジャーロ宮崎',emoji:'🟢',stadium:'ユニリーバスタジアム新富',stadiumImg:'',players:[{no:9,name:'山本大貴'},{no:10,name:'岩崎悠人'}]},
+      {id:'j2t20',name:'大分トリニータ',emoji:'🟡',stadium:'昭和電工ドーム大分',stadiumImg:'',players:[{no:1,name:'高木和徹'},{no:7,name:'野村直輝'},{no:9,name:'サムエル・グスタフソン'},{no:10,name:'弓場将輝'}]}
+    ],
+    J3:[
+      {id:'j3t01',name:'福島ユナイテッドFC',emoji:'🟢',stadium:'とうほう・みんなのスタジアム',stadiumImg:'',players:[{no:1,name:'三浦基瑛'},{no:9,name:'有田光希'},{no:10,name:'深川大輝'}]},
+      {id:'j3t02',name:'栃木SC',emoji:'🟡',stadium:'カンセキスタジアムとちぎ',stadiumImg:'',players:[
+        {no:1,name:'川田修平'},{no:4,name:'佐藤祥'},{no:5,name:'柳育崇'},{no:6,name:'阿部海斗'},
+        {no:7,name:'川名連介'},{no:9,name:'近藤慶一'},{no:10,name:'五十嵐太陽'},{no:11,name:'青島太一'},
+        {no:13,name:'大曽根広汰'},{no:14,name:'鈴木俊也'},{no:15,name:'堤陽輝'},{no:17,name:'杉森考起'},
+        {no:19,name:'庄司朗'},{no:21,name:'櫻庭立樹'},{no:24,name:'田端琉聖'},{no:25,name:'岩﨑博'},
+        {no:26,name:'田畑知起'},{no:27,name:'永井大士'},{no:29,name:'矢野貴章'},{no:31,name:'鹿野修平'},
+        {no:37,name:'木邨優人'},{no:39,name:'屋宜和真'},{no:40,name:'食野壮磨'},{no:47,name:'吉野陽翔'},
+        {no:71,name:'猪越優惟'},{no:77,name:'西野太陽'},{no:80,name:'オタボー ケネス'},{no:81,name:'中野克哉'},{no:88,name:'内田航平'}
+      ]},
+      {id:'j3t03',name:'ザスパ群馬',emoji:'🟢',stadium:'正田醤油スタジアム群馬',stadiumImg:'',players:[{no:9,name:'岡本一真'},{no:10,name:'城和隼颯'}]},
+      {id:'j3t04',name:'松本山雅FC',emoji:'🟢',stadium:'サンプロ アルウィン',stadiumImg:'',players:[{no:1,name:'大内一生'},{no:7,name:'小松蓮'},{no:9,name:'横山歩夢'},{no:10,name:'藤田息吹'}]},
+      {id:'j3t05',name:'SC相模原',emoji:'⚫',stadium:'相模原ギオンスタジアム',stadiumImg:'',players:[{no:1,name:'波多野豪'},{no:9,name:'ドミンゲス'},{no:10,name:'田中パウロ淳一'}]},
+      {id:'j3t06',name:'AC長野パルセイロ',emoji:'💛',stadium:'長野Uスタジアム',stadiumImg:'',players:[{no:9,name:'三田尚希'},{no:10,name:'宮阪政樹'}]},
+      {id:'j3t07',name:'ツエーゲン金沢',emoji:'💛',stadium:'石川県西部緑地公園陸上競技場',stadiumImg:'',players:[{no:9,name:'玉城峻吾'},{no:10,name:'林誠道'}]},
+      {id:'j3t08',name:'FC岐阜',emoji:'🔵',stadium:'岐阜メモリアルセンター長良川競技場',stadiumImg:'',players:[{no:1,name:'桐畑和繁'},{no:9,name:'山内寛史'},{no:10,name:'藤岡浩介'},{no:11,name:'粟飯原尚平'}]},
+      {id:'j3t09',name:'レイラック滋賀FC',emoji:'💙',stadium:'草津市立市民体育館前競技場',stadiumImg:'',players:[{no:9,name:'齊藤学'},{no:10,name:'吉長真優'}]},
+      {id:'j3t10',name:'奈良クラブ',emoji:'🟤',stadium:'ロート フィールド奈良',stadiumImg:'',players:[{no:9,name:'内田達也'},{no:10,name:'高橋大悟'}]},
+      {id:'j3t11',name:'FC大阪',emoji:'🔵',stadium:'東大阪市花園ラグビー場',stadiumImg:'',players:[{no:9,name:'藤本淳吾'},{no:10,name:'田中パウロ淳一'}]},
+      {id:'j3t12',name:'ガイナーレ鳥取',emoji:'💙',stadium:'Axisバードスタジアム',stadiumImg:'',players:[{no:9,name:'ジョアン・ジョイア'},{no:10,name:'田村翔太'}]},
+      {id:'j3t13',name:'レノファ山口FC',emoji:'💙',stadium:'維新みらいふスタジアム',stadiumImg:'',players:[{no:1,name:'関憲太郎'},{no:7,name:'五十嵐太陽'},{no:9,name:'河野孝汰'},{no:10,name:'高木大輔'}]},
+      {id:'j3t14',name:'愛媛FC',emoji:'🟠',stadium:'ニンジニアスタジアム',stadiumImg:'',players:[{no:9,name:'西田恵'},{no:10,name:'森田涼馬'}]},
+      {id:'j3t15',name:'カマタマーレ讃岐',emoji:'💛',stadium:'Pikaraスタジアム',stadiumImg:'',players:[{no:9,name:'富田健太'},{no:10,name:'高橋大悟'}]},
+      {id:'j3t16',name:'高知ユナイテッドSC',emoji:'🔴',stadium:'春野総合運動公園陸上競技場',stadiumImg:'',players:[{no:9,name:'松田陸'},{no:10,name:'中山陸'}]},
+      {id:'j3t17',name:'ギラヴァンツ北九州',emoji:'💙',stadium:'ミクニワールドスタジアム北九州',stadiumImg:'',players:[{no:9,name:'ディサロ燦シルヴァーノ'},{no:10,name:'平山相太'}]},
+      {id:'j3t18',name:'ロアッソ熊本',emoji:'🔴',stadium:'えがお健康スタジアム',stadiumImg:'',players:[{no:1,name:'田代琉我'},{no:7,name:'江﨑巧朗'},{no:9,name:'田辺陽太'},{no:10,name:'島村拓弥'}]},
+      {id:'j3t19',name:'鹿児島ユナイテッドFC',emoji:'⚫',stadium:'白波スタジアム',stadiumImg:'',players:[{no:9,name:'有田稜'},{no:10,name:'中原秀人'}]},
+      {id:'j3t20',name:'FC琉球',emoji:'💙',stadium:'沖縄市陸上競技場',stadiumImg:'',players:[{no:9,name:'阿部拓馬'},{no:10,name:'清武功暉'}]}
+    ]
+  };
+}
+
+// ============================================================
+// STATE
+// ============================================================
+var myUid, myEmoji;
+var regLeague='J1', searchLeague='J1';
+var selRegTeam=null, selRegGoodsId=null, selRegGoodsName=null, regNumStates={};
+var searchTeam=null, searchPlayer=null, searchGoodsId=null, searchGoodsName=null;
+var tradeTargetId=null, tradeTargetUserId=null, tradeNumStates={};
+var curChatThreadId=null;
+var adminLeague='J1';
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function(){
+  myUid = localStorage.getItem('oshi_uid');
+  if(!myUid){myUid='u'+Math.random().toString(36).substr(2,8);localStorage.setItem('oshi_uid',myUid);}
+  var emos=['😊','🎵','⭐','🌸','💫','🎤','🏆','🌟','🎀','💖'];
+  myEmoji = emos[parseInt(myUid.slice(-2),36)%emos.length];
+  document.getElementById('p-ava').textContent = myEmoji;
+  document.getElementById('p-uid').textContent = 'ID: '+myUid;
+  document.getElementById('p-name').textContent = '推しファン #'+myUid.slice(-4);
+  updateStats(sg('trades_'+myUid,0));
+
+  // チームデータはローカルキャッシュ（変更頻度低・容量大のためFirestore不要）
+  if(!sg('oshi_teams',null)) ss('oshi_teams',defaultTeams());
+
+  // Firebase から設定・グッズを取得
+  dbGetSettings().then(function(s){
+    showNoticeFromText(s.notice||'');
+  });
+  dbGetGoods().then(function(goods){
+    if(!goods.length){
+      // 初期グッズをFirestoreに登録
+      var defs=[
+        {name:'缶バッジ',emoji:'🎫',photo:null,lastUsed:0,teamId:null},
+        {name:'アクリルスタンド',emoji:'🏃',photo:null,lastUsed:0,teamId:null},
+        {name:'ガチャ',emoji:'🎰',photo:null,lastUsed:0,teamId:null}
+      ];
+      defs.forEach(function(g){dbSaveGoods(g);});
+    }
+  });
+
+  loadTotalTrades();
+  renderTeamList('reg');
+  renderTeamList('search');
+  renderMsgThreads();
+
+  document.getElementById('c-inp').addEventListener('keypress',function(e){if(e.key==='Enter')sendMsg();});
+});
+
+async function loadTotalTrades(){
+  var n=await dbGetTotal();
+  document.getElementById('total-n').textContent=n;
+  document.getElementById('hdr-badge').textContent='🎉 '+n+'件成立';
+}
+
+function updateStats(n){
+  document.getElementById('my-trades').textContent=n;
+  document.getElementById('my-badge').textContent=n>=30?'👑':n>=10?'🏆':n>=3?'⭐':'🌱';
+}
+
+function showNotice(){
+  showNoticeFromText(sg('oshi_notice',''));
+}
+function showNoticeFromText(txt){
+  var box=document.getElementById('home-notice');
+  var el=document.getElementById('notice-text');
+  if(txt&&txt.trim()){el.textContent=txt;box.style.display='block';}
+  else box.style.display='none';
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function go(id){
+  var pages=document.querySelectorAll('.pg');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('on');
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+  if(id==='pg-messages') renderMsgThreads();
+}
+
+// ============================================================
+// TEAM LIST (shared for reg & search)
+// ============================================================
+function switchLeague(l,el,mode){
+  if(mode==='reg') regLeague=l;
+  else searchLeague=l;
+  var tabsId = mode==='reg'?'reg-league-tabs':'search-league-tabs';
+  var tabs=document.querySelectorAll('#'+tabsId+' .tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
+  el.classList.add('on');
+  renderTeamList(mode);
+}
+
+function renderTeamList(mode){
+  var league = mode==='reg'?regLeague:searchLeague;
+  var listId = mode==='reg'?'reg-team-list':'search-team-list';
+  var qId = mode==='reg'?'reg-team-q':'search-team-q';
+  var selTeam = mode==='reg'?selRegTeam:searchTeam;
+
+  var teams=(sg('oshi_teams',defaultTeams())[league])||[];
+  var q=(document.getElementById(qId)||{}).value||'';
+  var el=document.getElementById(listId);
+  if(!el) return;
+  var filtered=teams.filter(function(t){return t.name.indexOf(q)>=0;});
+  if(!filtered.length){el.innerHTML='<div class="empty"><div class="ei">🔍</div><p>チームが見つかりません</p></div>';return;}
+  var html='';
+  for(var i=0;i<filtered.length;i++){
+    var t=filtered[i];
+    var sel=(selTeam&&selTeam.id===t.id)?' sel':'';
+    var enc=encodeURIComponent(JSON.stringify(t));
+    html+='<div class="team-item'+sel+'" onclick="pickTeam(\''+enc+'\',\''+mode+'\')">';
+    html+='<div class="team-ico">'+t.emoji+'</div>';
+    html+='<div><div class="team-name">'+t.name+'</div>';
+    html+='<div class="team-sub">'+league+' · '+(t.players||[]).length+'選手</div></div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function pickTeam(enc,mode){
+  var t=JSON.parse(decodeURIComponent(enc));
+  if(mode==='reg'){
+    selRegTeam=t;
+    renderTeamList('reg');
+  } else {
+    searchTeam=t;
+    renderTeamList('search');
+    showSearchStep(2);
+  }
+}
+
+// ============================================================
+// REGISTER FLOW
+// ============================================================
+function toRegGoods(){
+  if(!selRegTeam){alert('チームを選んでください');return;}
+  document.getElementById('reg-goods-sub').textContent=selRegTeam.name+'のグッズを選んでください';
+  renderRegGoodsGrid();
+  go('pg-reg-goods');
+}
+
+function renderRegGoodsGrid(){
+  var goods=sg('oshi_goods',[]);
+  var filtered=goods.filter(function(g){return !g.teamId||g.teamId===selRegTeam.id;});
+  filtered.sort(function(a,b){return (b.lastUsed||0)-(a.lastUsed||0);});
+  var html='';
+  for(var i=0;i<filtered.length;i++){
+    var g=filtered[i];
+    var sel=(selRegGoodsId===g.id)?' sel':'';
+    html+='<div class="g-card'+sel+'" onclick="pickRegGoods(\''+g.id+'\',\''+g.name.replace(/'/g,'&#39;')+'\')">';
+    if(g.photo) html+='<img src="'+g.photo+'" alt="'+g.name+'">';
+    else html+='<span class="emo">'+(g.emoji||'🎫')+'</span>';
+    html+='<div class="lbl">'+g.name+'</div></div>';
+  }
+  html+='<div class="g-card new-c" onclick="go(\'pg-new-goods\')">';
+  html+='<span class="emo" style="color:var(--gr)">＋</span>';
+  html+='<div class="lbl" style="color:var(--gr)">新しく登録</div></div>';
+  document.getElementById('reg-g-grid').innerHTML=html;
+}
+
+function pickRegGoods(id,name){
+  selRegGoodsId=id; selRegGoodsName=name;
+  renderRegGoodsGrid();
+}
+
+function onFileChange(inp){
+  var file=inp.files[0]; if(!file) return;
+  window._pendingFile=file;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var prev=document.getElementById('up-prev');
+    prev.src=e.target.result; prev.style.display='block';
+    document.getElementById('up-area').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveNewGoods(){
+  var name=document.getElementById('ng-name').value.trim();
+  var cat=document.getElementById('ng-cat').value;
+  if(!name){alert('グッズ名を入力してください');return;}
+  if(!window._pendingFile){alert('写真を選んでください');return;}
+
+  // Check duplicate name
+  var goods=sg('oshi_goods',[]);
+  var fullName=cat+'｜'+name;
+  var dup=goods.find(function(g){return g.name===fullName;});
+  if(dup){alert('同じグッズ名がすでに登録されています。一覧から選んでください。');return;}
+
+  var btn=document.getElementById('ng-btn');
+  btn.textContent='登録中...'; btn.disabled=true;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var entry={name:fullName,emoji:'🎫',photo:e.target.result,lastUsed:Date.now(),teamId:selRegTeam?selRegTeam.id:null};
+    dbSaveGoods(entry).then(function(saved){
+      selRegGoodsId=saved.id; selRegGoodsName=fullName;
+      window._pendingFile=null;
+      document.getElementById('up-prev').style.display='none';
+      document.getElementById('up-area').style.display='block';
+      document.getElementById('ng-name').value='';
+      btn.textContent='登録して背番号を選ぶ →'; btn.disabled=false;
+      toRegNumbers();
+    });
+  };
+  reader.readAsDataURL(window._pendingFile);
+}
+
+function toRegNumbers(){
+  if(!selRegGoodsId){alert('グッズを選んでください');return;}
+  document.getElementById('reg-num-sub').textContent=selRegTeam.name+'｜'+selRegGoodsName;
+  regNumStates={};
+  renderNumGrid('reg-n-grid',selRegTeam.players||[],regNumStates,'regCycle');
+  go('pg-reg-nums');
+}
+
+function renderNumGrid(gridId,players,states,cycleFn,disabledNos){
+  disabledNos=disabledNos||[];
+  var html='';
+  for(var i=0;i<players.length;i++){
+    var p=players[i];
+    var st=states[p.no]||'';
+    var disabled=disabledNos.indexOf(p.no)>=0;
+    var cls=disabled?'n-chip trading':'n-chip '+st;
+    var onclick=disabled?'':' onclick="'+cycleFn+'('+p.no+')"';
+    html+='<div class="'+cls+'"'+onclick+'>';
+    html+='<div class="nn">#'+p.no+'</div>';
+    html+='<div class="np">'+p.name+'</div></div>';
+  }
+  document.getElementById(gridId).innerHTML=html;
+}
+
+function regCycle(no){
+  var cur=regNumStates[no];
+  if(!cur) regNumStates[no]='have';
+  else if(cur==='have') regNumStates[no]='want';
+  else delete regNumStates[no];
+  renderNumGrid('reg-n-grid',selRegTeam.players||[],regNumStates,'regCycle');
+}
+
+async function submitMyListing(){
+  var haveNos=[], wantNos=[];
+  var keys=Object.keys(regNumStates);
+  for(var i=0;i<keys.length;i++){
+    if(regNumStates[keys[i]]==='have') haveNos.push(parseInt(keys[i]));
+    else wantNos.push(parseInt(keys[i]));
+  }
+  if(!haveNos.length){alert('「持っている」番号を1つ以上選んでください');return;}
+
+  var listing={
+    userId:myUid, userEmoji:myEmoji,
+    team:selRegTeam.name, teamEmoji:selRegTeam.emoji, teamId:selRegTeam.id, league:regLeague,
+    stadium:selRegTeam.stadium||'', stadiumImg:selRegTeam.stadiumImg||'',
+    goodsId:selRegGoodsId, goodsName:selRegGoodsName,
+    have:haveNos, want:wantNos, status:'open',
+    users:[myUid],
+    createdAt:Date.now(), updatedAt:Date.now()
+  };
+  await dbSaveListing(listing);
+
+  // Update goods lastUsed
+  var goods=sg('oshi_goods',[]);
+  var gi=goods.findIndex(function(g){return g.id===selRegGoodsId;});
+  if(gi>=0){goods[gi].lastUsed=Date.now();dbSaveGoods(goods[gi]);}
+
+  alert('✅ 登録しました！「探す」から交換相手を見つけましょう。');
+  go('pg-home');
+}
+
+// ============================================================
+// SEARCH FLOW
+// ============================================================
+function showSearchStep(n){
+  document.getElementById('search-step1').style.display=n===1?'block':'none';
+  document.getElementById('search-step2').style.display=n===2?'block':'none';
+  document.getElementById('search-step3').style.display=n===3?'block':'none';
+  document.getElementById('search-step4').style.display=n===4?'block':'none';
+  if(n===2) renderSearchPlayers();
+  if(n===3) renderSearchGoods();
+  if(n===4) renderSearchResults();
+}
+
+function searchBack(toStep){
+  showSearchStep(toStep);
+}
+
+function renderSearchPlayers(){
+  var el=document.getElementById('search-player-list');
+  document.getElementById('search-team-label').textContent=searchTeam.emoji+' '+searchTeam.name;
+  var players=searchTeam.players||[];
+  var html='';
+  for(var i=0;i<players.length;i++){
+    var p=players[i];
+    var enc=encodeURIComponent(JSON.stringify(p));
+    html+='<div class="team-item" onclick="pickSearchPlayer(\''+enc+'\')">';
+    html+='<div class="team-ico" style="font-size:16px;font-weight:900;">#'+p.no+'</div>';
+    html+='<div><div class="team-name">'+p.name+'</div></div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function pickSearchPlayer(enc){
+  searchPlayer=JSON.parse(decodeURIComponent(enc));
+  showSearchStep(3);
+}
+
+function renderSearchGoods(){
+  dbGetGoods().then(function(goods){
+    var filtered=goods.filter(function(g){return !g.teamId||g.teamId===searchTeam.id;});
+    filtered.sort(function(a,b){return (b.lastUsed||0)-(a.lastUsed||0);});
+    document.getElementById('search-player-label').textContent='#'+searchPlayer.no+' '+searchPlayer.name;
+    var html='';
+    for(var i=0;i<filtered.length;i++){
+      var g=filtered[i];
+      html+='<div class="g-card" onclick="pickSearchGoods(\''+g.id+'\',\''+g.name.replace(/'/g,'&#39;')+'\')">';
+      if(g.photo) html+='<img src="'+g.photo+'" alt="'+g.name+'">';
+      else html+='<span class="emo">'+(g.emoji||'🎫')+'</span>';
+      html+='<div class="lbl">'+g.name+'</div></div>';
+    }
+    if(!filtered.length) html='<div class="empty"><div class="ei">📦</div><p>グッズがまだ登録されていません</p></div>';
+    document.getElementById('search-g-grid').innerHTML=html;
+  });
+}
+
+function pickSearchGoods(id,name){
+  searchGoodsId=id; searchGoodsName=name;
+  showSearchStep(4);
+}
+
+function renderSearchResults(){
+  var lbl=searchTeam.emoji+' '+searchTeam.name+' #'+searchPlayer.no+' '+searchPlayer.name;
+  document.getElementById('search-result-label').textContent=lbl;
+  var el=document.getElementById('search-results-list');
+  el.innerHTML='<div class="empty"><div class="ei">⏳</div><p>検索中...</p></div>';
+  dbGetListings().then(function(listings){
+    var filtered=listings.filter(function(l){
+      return l.teamId===searchTeam.id && l.goodsId===searchGoodsId && l.userId!==myUid &&
+             (l.have||[]).indexOf(searchPlayer.no)>=0||(l.want||[]).indexOf(searchPlayer.no)>=0;
+    });
+    if(!filtered.length){
+      el.innerHTML='<div class="empty"><div class="ei">😢</div><p>まだ登録されている人がいません</p></div>';
+      return;
+    }
+    var html='';
+    for(var i=0;i<filtered.length;i++){
+      var l=filtered[i];
+      var isTrading=l.status==='trading';
+      var haveTagsHtml='',wantTagsHtml='';
+      for(var j=0;j<(l.have||[]).length;j++) haveTagsHtml+='<span class="tag h">#'+l.have[j]+'</span>';
+      for(var j=0;j<(l.want||[]).length;j++) wantTagsHtml+='<span class="tag w">#'+l.want[j]+'</span>';
+      html+='<div class="result-item'+(isTrading?' trading-item':'')+'">';
+      html+='<div class="ri-hdr"><div class="ri-user">';
+      html+='<div class="ava">'+(l.userEmoji||'😊')+'</div>';
+      html+='<div><div class="ri-name">'+l.goodsName+'</div>';
+      html+='<div class="ri-sub">'+l.team+'</div></div></div>';
+      html+='<span class="status-badge '+(isTrading?'sb-trading':'sb-open')+'">'+(isTrading?'取引中':'交換可能')+'</span></div>';
+      html+='<div class="tag-row">'+haveTagsHtml+'</div>';
+      html+='<div class="tag-row" style="margin-bottom:9px;">'+wantTagsHtml+'</div>';
+      if(!isTrading){
+        html+='<button class="btn btn-p" style="font-size:13px;padding:10px;" onclick="startTradeRequest(\''+l.id+'\')">交換希望する</button>';
+      } else {
+        html+='<button class="btn" style="background:var(--nv3);color:var(--gr);font-size:13px;padding:10px;" disabled>取引中</button>';
+      }
+      html+='</div>';
+    }
+    el.innerHTML=html;
+  });
+}
+
+async function startTradeRequest(listingId){
+  tradeTargetId=listingId;
+  var listings=sg('oshi_listings',[]);
+  var target=listings.find(function(l){return l.id===listingId;});
+  if(!target){
+    try{var snap=await db.collection('listings').doc(listingId).get();if(snap.exists)target=Object.assign({id:snap.id},snap.data());}catch(e){}
+  }
+  if(!target){alert('登録が見つかりません');return;}
+  tradeTargetUserId=target.userId;
+  document.getElementById('trade-num-sub').textContent=target.team+'｜'+target.goodsName+' の交換希望';
+  tradeNumStates={};
+  renderNumGrid('trade-n-grid',target.teamId?getTeamPlayers(target.teamId):[],tradeNumStates,'tradeCycle',[]);
+  go('pg-trade-nums');
+}
+
+function getTeamPlayers(teamId){
+  var teams=sg('oshi_teams',defaultTeams());
+  for(var league in teams){
+    var t=teams[league].find(function(t){return t.id===teamId;});
+    if(t) return t.players||[];
+  }
+  return [];
+}
+
+function tradeCycle(no){
+  var cur=tradeNumStates[no];
+  if(!cur) tradeNumStates[no]='have';
+  else if(cur==='have') tradeNumStates[no]='want';
+  else delete tradeNumStates[no];
+  var listings=sg('oshi_listings',[]);
+  var target=listings.find(function(l){return l.id===tradeTargetId;});
+  renderNumGrid('trade-n-grid',target?getTeamPlayers(target.teamId):[],tradeNumStates,'tradeCycle',[]);
+}
+
+async function submitTradeRequest(){
+  var haveNos=[], wantNos=[];
+  var keys=Object.keys(tradeNumStates);
+  for(var i=0;i<keys.length;i++){
+    if(tradeNumStates[keys[i]]==='have') haveNos.push(parseInt(keys[i]));
+    else wantNos.push(parseInt(keys[i]));
+  }
+  if(!haveNos.length){alert('「持っている」番号を1つ以上選んでください');return;}
+
+  var listings=sg('oshi_listings',[]);
+  var target=listings.find(function(l){return l.id===tradeTargetId;});
+  if(!target){alert('登録が見つかりません');return;}
+
+  await dbUpdateListing(tradeTargetId,{status:'trading',updatedAt:Date.now()});
+
+  var thread={
+    userA:myUid, userAEmoji:myEmoji,
+    userB:target.userId, userBEmoji:target.userEmoji,
+    users:[myUid,target.userId],
+    team:target.team, teamEmoji:target.teamEmoji,
+    stadium:target.stadium||'', stadiumImg:target.stadiumImg||'',
+    goodsName:target.goodsName, listingId:tradeTargetId,
+    myNums:haveNos, wantNums:wantNos,
+    status:'trading',
+    messages:[{from:'sys',text:'取引が開始されました。丁寧なやりとりをお願いします。',at:Date.now()}],
+    doneA:false, doneB:false,
+    createdAt:Date.now()
+  };
+  await dbSaveThread(thread);
+
+  alert('✅ 交換希望を送りました！メッセージで相談しましょう。');
+  go('pg-messages');
+}
+
+// ============================================================
+// MESSAGES
+// ============================================================
+function renderMsgThreads(){
+  var el=document.getElementById('msg-thread-list');
+  el.innerHTML='<div class="empty"><div class="ei">⏳</div><p>読み込み中...</p></div>';
+  dbGetThreads().then(function(threads){
+    threads=threads.filter(function(t){return t.userA===myUid||t.userB===myUid;});
+    if(!threads.length){el.innerHTML='<div class="empty"><div class="ei">💬</div><p>まだメッセージはありません</p></div>';return;}
+    threads.sort(function(a,b){return b.createdAt-a.createdAt;});
+    var html='';
+    for(var i=0;i<threads.length;i++){
+      var t=threads[i];
+      var isMyA=t.userA===myUid;
+      var peerEmoji=isMyA?t.userBEmoji:t.userAEmoji;
+      var lastMsg=t.messages&&t.messages.length?t.messages[t.messages.length-1]:{text:'取引開始'};
+      var isDone=t.status==='done';
+      html+='<div class="msg-thread'+(t.status==='trading'?' trading':'')+'" onclick="openChat(\''+t.id+'\')">';
+      html+='<div class="ava">'+(peerEmoji||'😊')+'</div>';
+      html+='<div class="thread-info">';
+      html+='<div class="thread-name">'+t.teamEmoji+' '+t.goodsName+(isDone?' ✅':'')+'</div>';
+      html+='<div class="thread-last">'+(lastMsg.text.length>30?lastMsg.text.substr(0,30)+'…':lastMsg.text)+'</div></div>';
+      if(!isDone&&t.status==='trading') html+='<div class="unread-dot"></div>';
+      html+='</div>';
+    }
+    el.innerHTML=html;
+  });
+}
+
+function openChat(threadId){
+  curChatThreadId=threadId;
+  var threads=sg('oshi_threads',[]);
+  var t=threads.find(function(t){return t.id===threadId;});
+  if(!t) return;
+
+  var isMyA=t.userA===myUid;
+  var peerEmoji=isMyA?t.userBEmoji:t.userAEmoji;
+  document.getElementById('c-ava').textContent=peerEmoji||'😊';
+  document.getElementById('c-name').textContent=t.teamEmoji+' '+t.goodsName;
+  document.getElementById('c-goods-badge').textContent=t.status==='done'?'✅成立':'取引中';
+  document.getElementById('c-status').textContent=t.status==='done'?'交換成立':'● 取引中';
+
+  // Stadium
+  var sa=document.getElementById('stadium-area');
+  if(t.stadiumImg&&t.stadiumImg.trim()){
+    document.getElementById('stadium-img').src=t.stadiumImg;
+    document.getElementById('stadium-name').textContent='📍 '+t.stadium;
+    sa.style.display='block';
+  } else if(t.stadium){
+    sa.style.display='block';
+    document.getElementById('stadium-img').style.display='none';
+    document.getElementById('stadium-name').textContent='📍 '+t.stadium;
+  } else {
+    sa.style.display='none';
+  }
+
+  var isDone=t.status==='done';
+  document.getElementById('done-trade-btn').style.display=isDone?'none':'block';
+  document.getElementById('cancel-trade-btn').style.display=isDone?'none':'block';
+
+  renderChatMsgs(t);
+  go('pg-chat');
+}
+
+function renderChatMsgs(t){
+  var el=document.getElementById('c-msgs');
+  var msgs=t.messages||[];
+  var html='<div class="msg sys">🔒 匿名チャットです。個人情報は共有しないでください。</div>';
+  for(var i=0;i<msgs.length;i++){
+    var m=msgs[i];
+    if(m.from==='sys'){
+      html+='<div class="msg sys">'+m.text+'</div>';
+    } else if(m.from===myUid){
+      html+='<div class="msg s">'+m.text+'</div>';
+    } else {
+      html+='<div class="msg r">'+m.text+'</div>';
+    }
+  }
+  el.innerHTML=html;
+  el.scrollTop=el.scrollHeight;
+}
+
+async function sendMsg(){
+  var inp=document.getElementById('c-inp');
+  var text=inp.value.trim();
+  if(!text) return;
+
+  var banned=sg('oshi_banned_words',[]);
+  for(var i=0;i<banned.length;i++){
+    if(text.indexOf(banned[i])>=0){alert('このメッセージには禁止ワードが含まれています。');return;}
+  }
+
+  inp.value='';
+  var threads=sg('oshi_threads',[]);
+  var idx=threads.findIndex(function(t){return t.id===curChatThreadId;});
+  if(idx<0) return;
+  threads[idx].messages=threads[idx].messages||[];
+  threads[idx].messages.push({from:myUid,text:text,at:Date.now()});
+  await dbUpdateThread(curChatThreadId,{messages:threads[idx].messages});
+  ss('oshi_threads',threads);
+  renderChatMsgs(threads[idx]);
+}
+
+function showDoneModal(){document.getElementById('ov-done').classList.add('on');}
+function showCancelModal(){document.getElementById('ov-cancel').classList.add('on');}
+function closeOv(id){document.getElementById(id).classList.remove('on');}
+
+async function confirmDone(){
+  closeOv('ov-done');
+  var threads=sg('oshi_threads',[]);
+  var idx=threads.findIndex(function(t){return t.id===curChatThreadId;});
+  if(idx<0) return;
+  var t=threads[idx];
+  var isMyA=t.userA===myUid;
+  if(isMyA) t.doneA=true; else t.doneB=true;
+
+  if(t.doneA&&t.doneB){
+    t.status='done';
+    t.messages.push({from:'sys',text:'🎉 交換が成立しました！ありがとうございました。',at:Date.now()});
+    await dbUpdateThread(curChatThreadId,{status:'done',doneA:true,doneB:true,messages:t.messages});
+    await dbDeleteListing(t.listingId);
+
+    var n=sg('trades_'+myUid,0)+1;
+    ss('trades_'+myUid,n);
+    updateStats(n);
+    await dbIncrementTrades();
+    loadTotalTrades();
+
+    ss('oshi_threads',threads);
+    renderChatMsgs(t);
+    document.getElementById('c-goods-badge').textContent='✅成立';
+    document.getElementById('done-trade-btn').style.display='none';
+    document.getElementById('cancel-trade-btn').style.display='none';
+    alert('🎉 交換成立！おめでとうございます！');
+  } else {
+    var upd=isMyA?{doneA:true}:{doneB:true};
+    await dbUpdateThread(curChatThreadId,upd);
+    ss('oshi_threads',threads);
+    alert('完了しました。相手が完了ボタンを押すと成立になります。');
+  }
+}
+
+async function confirmCancel(){
+  closeOv('ov-cancel');
+  var threads=sg('oshi_threads',[]);
+  var idx=threads.findIndex(function(t){return t.id===curChatThreadId;});
+  if(idx<0) return;
+  var t=threads[idx];
+  t.status='cancelled';
+  t.messages.push({from:'sys',text:'❌ 取引がキャンセルされました。',at:Date.now()});
+  await dbUpdateThread(curChatThreadId,{status:'cancelled',messages:t.messages});
+  await dbUpdateListing(t.listingId,{status:'open',updatedAt:Date.now()});
+
+  ss('oshi_threads',threads);
+  renderChatMsgs(t);
+  document.getElementById('done-trade-btn').style.display='none';
+  document.getElementById('cancel-trade-btn').style.display='none';
+  alert('取引をキャンセルしました。グッズが交換可能な状態に戻ります。');
+  go('pg-messages');
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+var ADMIN_PW='oshimatch2024';
+
+function switchAdminTab(tab,el){
+  var tabs=document.querySelectorAll('#admin-main-tabs .tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
+  el.classList.add('on');
+  document.getElementById('admin-teams-tab').style.display=tab==='teams'?'block':'none';
+  document.getElementById('admin-notice-tab').style.display=tab==='notice'?'block':'none';
+  document.getElementById('admin-words-tab').style.display=tab==='words'?'block':'none';
+  document.getElementById('admin-goods-a-tab').style.display=tab==='goods-a'?'block':'none';
+}
+
+function switchAdminLeague(l,el){
+  adminLeague=l;
+  var tabs=document.querySelectorAll('#admin-league-tabs .tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
+  el.classList.add('on');
+  renderAdminTeams();
+}
+
+function renderAdminTeams(){
+  var teams=(sg('oshi_teams',defaultTeams())[adminLeague])||[];
+  var el=document.getElementById('admin-team-list');
+  if(!teams.length){el.innerHTML='<div style="color:var(--gr);text-align:center;padding:16px;font-size:13px;">チームがありません</div>';return;}
+  var html='';
+  for(var i=0;i<teams.length;i++){
+    var t=teams[i];
+    var enc=encodeURIComponent(JSON.stringify(t));
+    html+='<div class="a-sec"><div class="a-row">';
+    html+='<span style="font-weight:700;font-size:13px;">'+t.emoji+' '+t.name+'</span>';
+    html+='<div class="a-btns"><button class="btn-ed" onclick="openEditTeam(\''+enc+'\')">編集</button>';
+    html+='<button class="btn-dl" onclick="delTeam(\''+t.id+'\',\''+t.name.replace(/'/g,'&#39;')+'\')">削除</button></div></div>';
+    if(t.stadium) html+='<div style="font-size:11px;color:var(--gr);margin-bottom:6px;">📍 '+t.stadium+'</div>';
+    var ptags='';
+    for(var j=0;j<(t.players||[]).length;j++) ptags+='<span class="p-tag">#'+t.players[j].no+' '+t.players[j].name+'</span>';
+    html+='<div>'+ptags+'</div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function checkPw(){
+  if(document.getElementById('admin-pw').value===ADMIN_PW){
+    document.getElementById('admin-pw').value='';
+    renderAdminTeams();
+    dbGetGoods().then(function(){renderAdminGoods();});
+    dbGetSettings().then(function(s){
+      renderWordTags();
+      document.getElementById('notice-edit').value=s.notice||'';
+    });
+    go('pg-admin');
+  } else {
+    alert('パスワードが違います');
+  }
+}
+
+function renderAdminGoods(){
+  var goods=sg('oshi_goods',[]);
+  var html='';
+  for(var i=0;i<goods.length;i++){
+    var g=goods[i];
+    html+='<div class="a-sec"><div class="a-row">';
+    if(g.photo) html+='<img src="'+g.photo+'" style="width:26px;height:26px;object-fit:cover;border-radius:5px;margin-right:7px;vertical-align:middle;">';
+    else html+='<span style="margin-right:6px;">'+(g.emoji||'🎫')+'</span>';
+    html+='<span style="font-weight:700;font-size:13px;">'+g.name+'</span>';
+    html+='<button class="btn-dl" onclick="delGoods(\''+g.id+'\')" style="margin-left:auto;">削除</button>';
+    html+='</div></div>';
+  }
+  if(!goods.length) html='<div style="color:var(--gr);text-align:center;padding:16px;font-size:13px;">グッズがありません</div>';
+  document.getElementById('admin-goods-list').innerHTML=html;
+}
+
+async function delGoods(id){
+  if(!confirm('このグッズを削除しますか？')) return;
+  await dbDeleteGoods(id);
+  renderAdminGoods();
+}
+
+function renderWordTags(){
+  var words=sg('oshi_banned_words',[]);
+  var html='';
+  for(var i=0;i<words.length;i++){
+    html+='<span class="word-tag" onclick="delWord(\''+words[i].replace(/'/g,'&#39;')+'\')">'+words[i]+' ✕</span>';
+  }
+  document.getElementById('word-tags').innerHTML=html||'<span style="color:var(--gr);font-size:13px;">禁止ワードはありません</span>';
+}
+
+async function addWord(){
+  var w=document.getElementById('new-word-inp').value.trim();
+  if(!w) return;
+  var words=sg('oshi_banned_words',[]);
+  if(words.indexOf(w)<0) words.push(w);
+  var notice=sg('oshi_notice','');
+  await dbSaveSettings(notice,words);
+  document.getElementById('new-word-inp').value='';
+  renderWordTags();
+}
+
+async function delWord(w){
+  var words=sg('oshi_banned_words',[]).filter(function(x){return x!==w;});
+  var notice=sg('oshi_notice','');
+  await dbSaveSettings(notice,words);
+  renderWordTags();
+}
+
+async function saveNotice(){
+  var txt=document.getElementById('notice-edit').value.trim();
+  var words=sg('oshi_banned_words',[]);
+  await dbSaveSettings(txt,words);
+  showNoticeFromText(txt);
+  alert('注意事項を保存しました');
+}
+
+function openAddTeam(){
+  document.getElementById('ov-team-title').textContent='チームを追加（'+adminLeague+'）';
+  document.getElementById('t-name').value='';
+  document.getElementById('t-emoji').value='';
+  document.getElementById('t-stadium').value='';
+  document.getElementById('t-stadium-img').value='';
+  document.getElementById('t-players').value='';
+  document.getElementById('t-id').value='';
+  document.getElementById('ov-team').classList.add('on');
+}
+
+function openEditTeam(enc){
+  var t=JSON.parse(decodeURIComponent(enc));
+  document.getElementById('ov-team-title').textContent='チームを編集';
+  document.getElementById('t-name').value=t.name;
+  document.getElementById('t-emoji').value=t.emoji;
+  document.getElementById('t-stadium').value=t.stadium||'';
+  document.getElementById('t-stadium-img').value=t.stadiumImg||'';
+  document.getElementById('t-players').value=(t.players||[]).map(function(p){return p.no+' '+p.name;}).join('\n');
+  document.getElementById('t-id').value=t.id||'';
+  document.getElementById('ov-team').classList.add('on');
+}
+
+function saveTeam(){
+  var name=document.getElementById('t-name').value.trim();
+  var emoji=document.getElementById('t-emoji').value.trim()||'⚽';
+  var stadium=document.getElementById('t-stadium').value.trim();
+  var stadiumImg=document.getElementById('t-stadium-img').value.trim();
+  var raw=document.getElementById('t-players').value.trim();
+  var editId=document.getElementById('t-id').value.trim();
+  if(!name){alert('チーム名を入力してください');return;}
+  var lines=raw.split('\n');
+  var players=[];
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim(); if(!line) continue;
+    var parts=line.split(/\s+/);
+    var no=parseInt(parts[0]); var pname=parts.slice(1).join(' ');
+    if(!isNaN(no)&&pname) players.push({no:no,name:pname});
+  }
+  var teams=sg('oshi_teams',defaultTeams());
+  if(!teams[adminLeague]) teams[adminLeague]=[];
+  var teamData={id:editId||nid(),name:name,emoji:emoji,stadium:stadium,stadiumImg:stadiumImg,players:players};
+  if(editId){
+    var idx=teams[adminLeague].findIndex(function(t){return t.id===editId;});
+    if(idx>=0) teams[adminLeague][idx]=teamData;
+    else teams[adminLeague].push(teamData);
+  } else {
+    teams[adminLeague].push(teamData);
+  }
+  ss('oshi_teams',teams);
+  closeOv('ov-team');
+  renderAdminTeams();
+}
+
+function delTeam(id,name){
+  if(!confirm('「'+name+'」を削除しますか？')) return;
+  var teams=sg('oshi_teams',defaultTeams());
+  if(teams[adminLeague]) teams[adminLeague]=teams[adminLeague].filter(function(t){return t.id!==id;});
+  ss('oshi_teams',teams);
+  renderAdminTeams();
+}
+</script>
+</body>
+</html>
